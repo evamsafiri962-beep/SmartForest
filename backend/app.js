@@ -1,41 +1,53 @@
-var createError = require('http-errors');
+require('dotenv').config();
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var cors = require('cors');
+var mongoose = require('mongoose');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var authRoutes = require('./routes/authRoutes');
+var alertRoutes = require('./routes/alertRoutes');
+var rangerRoutes = require('./routes/rangerRoutes');   // <-- added
+var sensorRoutes = require('./routes/sensorRoutes');
+var reportRoutes = require('./routes/reportRoutes');
+var adminRoutes = require('./routes/adminRoutes');
+var officerRoutes = require('./routes/officerRoutes');
+
+var errorHandler = require('./middleware/errorHandler');
+var { requestLogger } = require('./middleware/logger');
 
 var app = express();
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
+app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static('uploads'));
+app.use(requestLogger);
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+// API routes
+app.use('/api/auth', authRoutes);
+app.use('/api/alerts', alertRoutes);
+app.use('/api/ranger', rangerRoutes);        // <-- mounted here
+app.use('/api/sensors', sensorRoutes);
+app.use('/api/reports', reportRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/officer', officerRoutes);
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+app.get('/api/health', (req, res) => res.json({ status: 'OK', timestamp: new Date() }));
+
+// 404 handler
+app.use((req, res, next) => {
+  res.status(404).json({ message: 'Route not found' });
 });
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
+app.use(errorHandler);
 
 module.exports = app;

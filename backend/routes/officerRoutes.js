@@ -194,3 +194,36 @@ router.get('/live-activity', async (req, res, next) => {
 });
 
 module.exports = router;
+
+// DELETE /api/officer/zones/:id
+router.delete('/zones/:id', async (req, res, next) => {
+  try {
+    const forestId = await getOfficerForest(req);
+    const zone = await Zone.findOne({ _id: req.params.id, forestId });
+    if (!zone) return res.status(404).json({ message: 'Zone not found or not in your forest' });
+    await zone.deleteOne();
+    res.json({ message: 'Zone deleted' });
+  } catch (error) { next(error); }
+});
+
+// DELETE /api/officer/sensors/:id
+router.delete('/sensors/:id', async (req, res, next) => {
+  try {
+    const forestId = await getOfficerForest(req);
+    const sensor = await Sensor.findOne({ _id: req.params.id, forestId });
+    if (!sensor) return res.status(404).json({ message: 'Sensor not found or not in your forest' });
+    await sensor.deleteOne();
+    res.json({ message: 'Sensor deleted' });
+  } catch (error) { next(error); }
+});
+
+// DELETE /api/officer/rangers/:id
+router.delete('/rangers/:id', async (req, res, next) => {
+  try {
+    const forestId = await getOfficerForest(req);
+    const ranger = await User.findOne({ _id: req.params.id, role: 'ranger', forestId });
+    if (!ranger) return res.status(404).json({ message: 'Ranger not found or not in your forest' });
+    await ranger.deleteOne();
+    res.json({ message: 'Ranger deleted' });
+  } catch (error) { next(error); }
+});

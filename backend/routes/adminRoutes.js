@@ -164,3 +164,63 @@ router.get('/reports', async (req, res, next) => {
 });
 
 module.exports = router;
+
+// POST /api/admin/users – create any user (admin only)
+router.post('/users', async (req, res, next) => {
+  try {
+    const { name, email, password, role, forestId, zoneIds } = req.body;
+    // If role is officer or ranger, forestId is required
+    if ((role === 'officer' || role === 'ranger') && !forestId) {
+      return res.status(400).json({ message: 'forestId required for officer/ranger' });
+    }
+    const user = await User.create({
+      name,
+      email,
+      password,
+      role,
+      forestId: forestId || null,
+      zoneIds: zoneIds || []
+    });
+    res.status(201).json(user);
+  } catch (error) { next(error); }
+});
+
+// DELETE /api/admin/users/:id – delete any user
+router.delete('/users/:id', async (req, res, next) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) { next(error); }
+});
+
+// DELETE /api/admin/forests/:id
+router.delete('/forests/:id', async (req, res, next) => {
+  try {
+    const forest = await Forest.findByIdAndDelete(req.params.id);
+    if (!forest) return res.status(404).json({ message: 'Forest not found' });
+    // Also delete associated zones, sensors, alerts? We can cascade or let user handle.
+    // For safety, we delete associated zones and sensors.
+    await Zone.deleteMany({ forestId: forest._id });
+    await Sensor.deleteMany({ forestId: forest._id });
+    await Alert.deleteMany({ forestId: forest._id });
+    res.json({ message: 'Forest and associated data deleted' });
+  } catch (error) { next(error); }
+});
+
+// DELETE /api/admin/officers/:id
+router.delete('/officers/:id', async (req, res, next) => {
+  try {
+    const officer = await User.findOneAndDelete({ _id: req.params.id, role: 'officer' });
+    if (!officer) return res.status(404).json({ message: 'Officer not found' });
+    res.json({ message: 'Officer deleted' });
+  } catch (error) { next(error); }
+});
+
+// GET /api/admin/users – list all users (admin only)
+router.get('/users', async (req, res, next) => {
+  try {
+    const users = await User.find().populate('forestId', 'name');
+    res.json(users);
+  } catch (error) { next(error); }
+});

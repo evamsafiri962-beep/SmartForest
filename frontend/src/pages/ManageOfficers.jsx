@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Users, Plus, User } from 'lucide-react';
+import { Users, Plus, Trash2 } from 'lucide-react';
 
 const ManageOfficers = () => {
   const [officers, setOfficers] = useState([]);
@@ -40,11 +40,23 @@ const ManageOfficers = () => {
     }
   };
 
+  const deleteOfficer = async (id) => {
+    if (!window.confirm('Delete this officer?')) return;
+    try {
+      await axios.delete(`http://localhost:3000/api/admin/officers/${id}`);
+      fetchData();
+    } catch (err) {
+      alert('Delete failed: ' + err.response?.data?.message);
+    }
+  };
+
   if (loading) return <div className="p-6 text-gray-400">Loading...</div>;
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-2xl font-bold text-white mb-6 flex items-center gap-2"><Users className="w-6 h-6 text-emerald-400" /> Manage Officers</h1>
+      <h1 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+        <Users className="w-6 h-6 text-emerald-400" /> Manage Officers
+      </h1>
 
       <form onSubmit={addOfficer} className="bg-gray-900/50 border border-gray-800 rounded-xl p-5 mb-6">
         <h2 className="text-lg font-semibold text-white mb-3">Add Officer</h2>
@@ -63,10 +75,21 @@ const ManageOfficers = () => {
 
       <div className="bg-gray-900/50 border border-gray-800 rounded-xl overflow-hidden">
         <table className="w-full text-left">
-          <thead className="bg-gray-800/50 border-b border-gray-800"><tr><th className="p-3 text-sm text-gray-400">Name</th><th className="p-3 text-sm text-gray-400">Email</th><th className="p-3 text-sm text-gray-400">Forest</th></tr></thead>
+          <thead className="bg-gray-800/50 border-b border-gray-800">
+            <tr><th className="p-3 text-sm text-gray-400">Name</th><th className="p-3 text-sm text-gray-400">Email</th><th className="p-3 text-sm text-gray-400">Forest</th><th className="p-3 text-sm text-gray-400">Actions</th></tr>
+          </thead>
           <tbody>
             {officers.map(o => (
-              <tr key={o._id} className="border-b border-gray-800"><td className="p-3 text-white">{o.name}</td><td className="p-3 text-gray-400">{o.email}</td><td className="p-3 text-gray-400">{o.forestId?.name || '—'}</td></tr>
+              <tr key={o._id} className="border-b border-gray-800">
+                <td className="p-3 text-white">{o.name}</td>
+                <td className="p-3 text-gray-400">{o.email}</td>
+                <td className="p-3 text-gray-400">{o.forestId?.name || '—'}</td>
+                <td className="p-3">
+                  <button onClick={() => deleteOfficer(o._id)} className="text-red-400 hover:text-red-300 transition">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </td>
+              </tr>
             ))}
           </tbody>
         </table>

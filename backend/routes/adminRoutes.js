@@ -224,3 +224,54 @@ router.get('/users', async (req, res, next) => {
     res.json(users);
   } catch (error) { next(error); }
 });
+
+// GET /api/admin/alerts-aggregated – aggregate alerts from both local and core
+router.get('/alerts-aggregated', async (req, res, next) => {
+  try {
+    // Fetch core alerts
+    let coreAlerts = [];
+    try {
+      const coreApi = require('../services/coreApi');
+      coreAlerts = await coreApi.getAlerts();
+    } catch (err) {
+      console.warn('Core alerts unavailable:', err.message);
+    }
+
+    // Fetch local alerts (with forest populated)
+    const localAlerts = await Alert.find().populate('forestId', 'name');
+
+    // Group by forest
+    const map = {};
+
+    // Process local alerts
+    localAlerts.forEach(a => {
+      const forestName = a.forestId ? a.forestId.name : 'Unknown';
+      if (!map[forestName]) map[forestName] = { total: 0, active: 0, resolved: 0 };
+      map[forestName].total++;
+      if (a.status === 'active') map[forestName].active++;
+      if (a.status === 'resolved') map[forestName].resolved++;
+    });
+
+    // Add core alerts as a separate group "IoT"
+    if (coreAlerts.length > 0) {
+      map['IoT'] = {
+        total: coreAlerts.length,
+        active: coreAlerts.filter(a => a.status === 'active').length,
+        resolved: coreAlerts.filter(a => a.status === 'resolved').length,
+      };
+    }
+
+    // Convert to array with percentages
+    const result = Object.entries(map).map(([forestName, stats]) => ({
+      forestName,
+      total: stats.total,
+      active: stats.active,
+      resolved: stats.resolved,
+      percentage: stats.total > 0 ? ((stats.resolved / stats.total) * 100).toFixed(1) : 0,
+    }));
+
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+});

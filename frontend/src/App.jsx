@@ -16,6 +16,7 @@ import OfficerManageSensors from './pages/OfficerManageSensors';
 import AdminDashboard from './pages/AdminDashboard';
 import ManageForests from './pages/ManageForests';
 import ManageOfficers from './pages/ManageOfficers';
+import ManageUsers from './pages/ManageUsers';
 import AdminForestMap from './pages/AdminForestMap';
 import AdminAlerts from './pages/AdminAlerts';
 import AdminReports from './pages/AdminReports';
@@ -23,7 +24,7 @@ import AdminRangers from './pages/AdminRangers';
 // Ranger pages
 import RangerOverview from './pages/RangerOverview';
 import MyArea from './pages/MyArea';
-// Others (fallback)
+// Others
 import Overview from './pages/Overview';
 import ForestMap from './pages/ForestMap';
 import Alerts from './pages/Alerts';
@@ -67,6 +68,7 @@ function App() {
           <Route path="/admin/rangers" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><AdminRangers /></AppLayout></ProtectedRoute>} />
           <Route path="/manage-forests" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><ManageForests /></AppLayout></ProtectedRoute>} />
           <Route path="/manage-officers" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><ManageOfficers /></AppLayout></ProtectedRoute>} />
+          <Route path="/manage-users" element={<ProtectedRoute allowedRoles={['admin']}><AppLayout><ManageUsers /></AppLayout></ProtectedRoute>} />
 
           {/* Officer routes */}
           <Route path="/officer/dashboard" element={<ProtectedRoute allowedRoles={['officer']}><AppLayout><OfficerDashboard /></AppLayout></ProtectedRoute>} />
@@ -80,7 +82,7 @@ function App() {
           {/* Ranger routes */}
           <Route path="/my-area" element={<ProtectedRoute allowedRoles={['ranger']}><AppLayout><MyArea /></AppLayout></ProtectedRoute>} />
 
-          {/* Fallback routes (non-admin/officer) */}
+          {/* Fallback */}
           <Route path="/forest-map" element={<ProtectedRoute><AppLayout><ForestMap /></AppLayout></ProtectedRoute>} />
           <Route path="/alerts" element={<ProtectedRoute><AppLayout><Alerts /></AppLayout></ProtectedRoute>} />
           <Route path="/active-cases" element={<ProtectedRoute><AppLayout><ActiveCases /></AppLayout></ProtectedRoute>} />

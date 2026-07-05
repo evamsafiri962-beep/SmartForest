@@ -27,6 +27,7 @@ const Sidebar = () => {
       { name: 'Rangers', path: '/admin/rangers', icon: Users },
       { name: 'Manage Forests', path: '/manage-forests', icon: Globe },
       { name: 'Manage Officers', path: '/manage-officers', icon: UserPlus },
+      { name: 'Manage Users', path: '/manage-users', icon: Users },
     ];
   } else if (isOfficer) {
     menuItems = [
@@ -44,13 +45,11 @@ const Sidebar = () => {
       { name: 'My Area', path: '/my-area', icon: MapPin },
     ];
   } else {
-    menuItems = [
-      { name: 'Overview', path: '/', icon: LayoutDashboard },
-    ];
+    menuItems = [{ name: 'Overview', path: '/', icon: LayoutDashboard }];
   }
 
   return (
-    <aside className="w-72 bg-gray-900/50 backdrop-blur-sm border-r border-gray-800 flex flex-col">
+    <aside className="w-72 bg-black-900/50 backdrop-blur-sm border-r border-gray-800 flex flex-col">
       <div className="p-6 border-b border-gray-800">
         <div className="flex items-center gap-2">
           <div className="bg-emerald-600 p-2 rounded-lg"><Leaf className="w-6 h-6 text-white" /></div>

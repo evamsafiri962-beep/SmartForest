@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Globe, Plus, Trash2 } from 'lucide-react';
+import { Globe, Plus, Trash2, Edit } from 'lucide-react';
 
 const ManageForests = () => {
   const [forests, setForests] = useState([]);
@@ -35,11 +35,23 @@ const ManageForests = () => {
     }
   };
 
+  const deleteForest = async (id) => {
+    if (!window.confirm('Delete this forest? All associated zones, sensors and alerts will also be removed.')) return;
+    try {
+      await axios.delete(`http://localhost:3000/api/admin/forests/${id}`);
+      fetchForests();
+    } catch (err) {
+      alert('Delete failed: ' + err.response?.data?.message);
+    }
+  };
+
   if (loading) return <div className="p-6 text-gray-400">Loading...</div>;
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-2xl font-bold text-white mb-6 flex items-center gap-2"><Globe className="w-6 h-6 text-emerald-400" /> Manage Forests</h1>
+      <h1 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+        <Globe className="w-6 h-6 text-emerald-400" /> Manage Forests
+      </h1>
 
       <form onSubmit={addForest} className="bg-gray-900/50 border border-gray-800 rounded-xl p-5 mb-6">
         <h2 className="text-lg font-semibold text-white mb-3">Add New Forest</h2>
@@ -54,10 +66,21 @@ const ManageForests = () => {
 
       <div className="bg-gray-900/50 border border-gray-800 rounded-xl overflow-hidden">
         <table className="w-full text-left">
-          <thead className="bg-gray-800/50 border-b border-gray-800"><tr><th className="p-3 text-sm text-gray-400">Name</th><th className="p-3 text-sm text-gray-400">Location</th><th className="p-3 text-sm text-gray-400">Description</th></tr></thead>
+          <thead className="bg-gray-800/50 border-b border-gray-800">
+            <tr><th className="p-3 text-sm text-gray-400">Name</th><th className="p-3 text-sm text-gray-400">Location</th><th className="p-3 text-sm text-gray-400">Description</th><th className="p-3 text-sm text-gray-400">Actions</th></tr>
+          </thead>
           <tbody>
             {forests.map(f => (
-              <tr key={f._id} className="border-b border-gray-800"><td className="p-3 text-white">{f.name}</td><td className="p-3 text-gray-400">{f.location}</td><td className="p-3 text-gray-400">{f.description}</td></tr>
+              <tr key={f._id} className="border-b border-gray-800">
+                <td className="p-3 text-white">{f.name}</td>
+                <td className="p-3 text-gray-400">{f.location}</td>
+                <td className="p-3 text-gray-400">{f.description}</td>
+                <td className="p-3">
+                  <button onClick={() => deleteForest(f._id)} className="text-red-400 hover:text-red-300 transition">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </td>
+              </tr>
             ))}
           </tbody>
         </table>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Bell, AlertCircle, CheckCircle, TrendingUp } from 'lucide-react';
+import { Bell, TrendingUp, Wifi } from 'lucide-react';
 
 const AdminAlerts = () => {
   const [data, setData] = useState([]);
@@ -9,7 +9,7 @@ const AdminAlerts = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get('http://localhost:3000/api/admin/alerts-by-forest');
+        const res = await axios.get('http://localhost:3000/api/admin/alerts-aggregated');
         setData(res.data);
       } catch (err) {
         console.error(err);
@@ -33,7 +33,7 @@ const AdminAlerts = () => {
         <table className="w-full text-left">
           <thead className="bg-gray-800/50 border-b border-gray-800">
             <tr>
-              <th className="p-4 text-sm font-medium text-gray-400">Forest</th>
+              <th className="p-4 text-sm font-medium text-gray-400">Forest / Source</th>
               <th className="p-4 text-sm font-medium text-gray-400 text-center">Total Alerts</th>
               <th className="p-4 text-sm font-medium text-gray-400 text-center">Active</th>
               <th className="p-4 text-sm font-medium text-gray-400 text-center">Resolved</th>
@@ -43,7 +43,10 @@ const AdminAlerts = () => {
           <tbody>
             {data.map(item => (
               <tr key={item.forestName} className="border-b border-gray-800 hover:bg-gray-800/30">
-                <td className="p-4 text-white font-medium">{item.forestName}</td>
+                <td className="p-4 text-white font-medium flex items-center gap-2">
+                  {item.forestName === 'IoT' && <Wifi className="w-4 h-4 text-blue-400" />}
+                  {item.forestName}
+                </td>
                 <td className="p-4 text-center text-gray-300">{item.total}</td>
                 <td className="p-4 text-center text-orange-400">{item.active}</td>
                 <td className="p-4 text-center text-green-400">{item.resolved}</td>

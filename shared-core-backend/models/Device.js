@@ -1,17 +1,32 @@
-const mongoose = require("mongoose");
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/database');
 
-const deviceSchema = new mongoose.Schema(
-  {
-    device_code: { type: String, unique: true },
-    name: String,
-    status: { type: String, default: "offline" },
-
-    latitude: Number,
-    longitude: Number,
-
-    lastSeen: Date,
+const Device = sequelize.define('Device', {
+  device_code: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
   },
-  { timestamps: true }
-);
+  name: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  status: {
+    type: DataTypes.STRING,
+    defaultValue: 'offline',
+  },
+  latitude: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+  },
+  longitude: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+  },
+  last_seen: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+});
 
-module.exports = mongoose.model("Device", deviceSchema);
+module.exports = Device;

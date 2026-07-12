@@ -1,31 +1,39 @@
-const mongoose = require("mongoose");
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/database');
+const Device = require('./Device');
 
-const alertSchema = new mongoose.Schema(
-  {
-    device_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Device",
-    },
-
-    type: String, // fire, noise, illegal_activity
-    message: String,
-
-    severity: {
-      type: String,
-      enum: ["low", "medium", "high", "critical"],
-      default: "medium",
-    },
-
-    status: {
-      type: String,
-      enum: ["active", "resolved"],
-      default: "active",
-    },
-
-    latitude: Number,
-    longitude: Number,
+const Alert = sequelize.define('Alert', {
+  type: {
+    type: DataTypes.STRING,
+    allowNull: false, // fire, noise, illegal_activity
   },
-  { timestamps: true }
-);
+  message: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  severity: {
+    type: DataTypes.ENUM('low', 'medium', 'high', 'critical'),
+    defaultValue: 'medium',
+  },
+  status: {
+    type: DataTypes.ENUM('active', 'resolved'),
+    defaultValue: 'active',
+  },
+  latitude: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+  },
+  longitude: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+  },
+  device_code: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+});
 
-module.exports = mongoose.model("Alert", alertSchema);
+Alert.belongsTo(Device, { foreignKey: 'device_id' });
+Device.hasMany(Alert, { foreignKey: 'device_id' });
+
+module.exports = Alert;

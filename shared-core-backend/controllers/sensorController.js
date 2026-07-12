@@ -1,49 +1,61 @@
-const SensorReading = require("../models/SensorReading");
-const { createAlertFromSensor } = require("../services/alertServices");
+const { SensorReading, Device } = require('../models');
+const { createAlertFromSensor } = require('../services/alertServices');
+const { Op } = require('sequelize');
 
-// ADD SENSOR READING
 exports.addReading = async (req, res) => {
   try {
-    const io = req.app.get("io");
+    const io = req.app.get('io');
     const data = req.body;
 
-    // 1. SAVE SENSOR DATA
-    const reading = await SensorReading.create(data);
+    // Validate required fields
+    if (!data.device_code) {
+      return res.status(400).json({ success: false, message: 'device_code is required' });
+    }
 
-    // 2. ALERT LOGIC CENTRALIZED
+    const reading = await SensorReading.create({
+      device_code: data.device_code,
+      smoke: data.smoke || 0,
+      sound: data.sound || 0,
+      temperature: data.temperature || 0,
+      latitude: data.latitude || null,
+      longitude: data.longitude || null,
+    });
+
+    // Update or create device
+    await Device.upsert({
+      device_code: data.device_code,
+      last_seen: new Date(),
+      status: 'online',
+    });
+
     let alert = null;
-
     if (data.smoke > 70 || data.sound > 80) {
-      alert = await createAlertFromSensor({
-        device_code: data.device_code,
-        type: "fire",
-        message: "Danger detected from ESP32",
-        severity: "high",
-        latitude: data.latitude,
-        longitude: data.longitude,
-      });
-
-      // 3. REAL-TIME EMIT
-      io.emit("new_alert", alert);
+      alert = await createAlertFromSensor(data);
+      if (alert) {
+        io.emit('new_alert', alert.toJSON());
+      }
     }
 
     res.json({
       success: true,
-      reading,
-      alert,
+      reading: reading.toJSON(),
+      alert: alert ? alert.toJSON() : null,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error('Add reading error:', error);
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
 };
 
-// GET ALL READINGS
 exports.getReadings = async (req, res) => {
   try {
-    const data = await SensorReading.find().sort({ createdAt: -1 });
-    res.json(data);
+    const readings = await SensorReading.findAll({
+      order: [['createdAt', 'DESC']],
+      limit: 20,
+    });
+    res.json(readings);
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch readings" });
+    console.error('Get readings error:', error);
+    res.status(500).json({ message: 'Failed to fetch readings' });
   }
 };

@@ -275,3 +275,43 @@ router.get('/alerts-aggregated', async (req, res, next) => {
     next(error);
   }
 });
+
+// GET /api/admin/alerts-aggregated
+router.get('/alerts-aggregated', async (req, res, next) => {
+  try {
+    const localAlerts = await Alert.find().populate('forestId', 'name');
+    const iotAlerts = await Alert.find({ source: 'iot' });
+
+    const map = {};
+
+    // Process local alerts (non-IoT)
+    localAlerts.forEach(a => {
+      const forestName = a.forestId ? a.forestId.name : 'Unknown';
+      if (!map[forestName]) map[forestName] = { total: 0, active: 0, resolved: 0 };
+      map[forestName].total++;
+      if (a.status === 'active') map[forestName].active++;
+      if (a.status === 'resolved') map[forestName].resolved++;
+    });
+
+    // Add IoT alerts as a separate group
+    if (iotAlerts.length > 0) {
+      map['IoT'] = {
+        total: iotAlerts.length,
+        active: iotAlerts.filter(a => a.status === 'active').length,
+        resolved: iotAlerts.filter(a => a.status === 'resolved').length,
+      };
+    }
+
+    const result = Object.entries(map).map(([forestName, stats]) => ({
+      forestName,
+      total: stats.total,
+      active: stats.active,
+      resolved: stats.resolved,
+      percentage: stats.total > 0 ? ((stats.resolved / stats.total) * 100).toFixed(1) : 0,
+    }));
+
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+});

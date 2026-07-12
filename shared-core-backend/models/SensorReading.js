@@ -1,22 +1,35 @@
-const mongoose = require("mongoose");
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/database');
+const Device = require('./Device');
 
-const sensorReadingSchema = new mongoose.Schema(
-  {
-    device_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Device",
-    },
-
-    smoke: Number,
-    sound: Number,
-    temperature: Number,
-
-    gps: {
-      lat: Number,
-      lng: Number,
-    },
+const SensorReading = sequelize.define('SensorReading', {
+  smoke: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
   },
-  { timestamps: true }
-);
+  sound: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  temperature: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+  },
+  latitude: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+  },
+  longitude: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+  },
+  device_code: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+});
 
-module.exports = mongoose.model("SensorReading", sensorReadingSchema);
+SensorReading.belongsTo(Device, { foreignKey: 'device_id' });
+Device.hasMany(SensorReading, { foreignKey: 'device_id' });
+
+module.exports = SensorReading;

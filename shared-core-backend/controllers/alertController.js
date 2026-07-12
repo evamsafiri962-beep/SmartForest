@@ -1,37 +1,35 @@
-const Alert = require("../models/Alert");
+const { Alert } = require('../models');
+const { forwardAlertToMain } = require('../services/alertServices');
 
-// GET ALL ALERTS
 exports.getAlerts = async (req, res) => {
   try {
-    const alerts = await Alert.find().sort({ createdAt: -1 });
+    const alerts = await Alert.findAll({
+      order: [['createdAt', 'DESC']],
+    });
     res.json(alerts);
   } catch (error) {
-    console.error("Get alerts error:", error);
-    res.status(500).json({ message: "Server error" });
+    console.error('Get alerts error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
-// RESOLVE ALERT (WITH SOCKET.IO)
 exports.resolveAlert = async (req, res) => {
   try {
-    const alert = await Alert.findById(req.params.id);
-
+    const alert = await Alert.findByPk(req.params.id);
     if (!alert) {
-      return res.status(404).json({ message: "Alert not found" });
+      return res.status(404).json({ message: 'Alert not found' });
     }
-
-    alert.status = "resolved";
+    alert.status = 'resolved';
     await alert.save();
 
-    // SOCKET.IO REAL-TIME UPDATE
-    const io = req.app.get("io");
-    if (io) {
-      io.emit("alert_resolved", alert);
-    }
+    const io = req.app.get('io');
+    io.emit('alert_resolved', alert.toJSON());
+
+    await forwardAlertToMain(alert);
 
     res.json(alert);
   } catch (error) {
-    console.error("Resolve alert error:", error);
-    res.status(500).json({ message: "Server error" });
+    console.error('Resolve alert error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };

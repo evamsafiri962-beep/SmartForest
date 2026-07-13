@@ -22,8 +22,8 @@ const ManageUsers = () => {
   const fetchData = async () => {
     try {
       const [usersRes, forestsRes] = await Promise.all([
-        axios.get('http://localhost:3000/api/admin/users'), // we'll add this endpoint
-        axios.get('http://localhost:3000/api/admin/forests')
+        axios.get('http://localhost:5000/api/admin/users'), // we'll add this endpoint
+        axios.get('http://localhost:5000/api/admin/forests')
       ]);
       setUsers(usersRes.data);
       setForests(forestsRes.data);
@@ -37,7 +37,7 @@ const ManageUsers = () => {
   const addUser = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:3000/api/admin/users', formData);
+      await axios.post('http://localhost:5000/api/admin/users', formData);
       setMessage('User created!');
       setFormData({ name: '', email: '', password: '', role: 'viewer', forestId: '' });
       fetchData();
@@ -49,7 +49,7 @@ const ManageUsers = () => {
   const deleteUser = async (id) => {
     if (!window.confirm('Delete this user?')) return;
     try {
-      await axios.delete(`http://localhost:3000/api/admin/users/${id}`);
+      await axios.delete(`http://localhost:5000/api/admin/users/${id}`);
       fetchData();
     } catch (err) {
       alert('Delete failed: ' + err.response?.data?.message);

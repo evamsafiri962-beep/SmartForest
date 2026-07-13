@@ -9,7 +9,7 @@ const AdminAlerts = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get('http://localhost:3000/api/admin/alerts-aggregated');
+        const res = await axios.get('http://localhost:5000/api/admin/alerts-aggregated');
         setData(res.data);
       } catch (err) {
         console.error(err);

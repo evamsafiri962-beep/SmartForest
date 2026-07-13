@@ -18,11 +18,11 @@ const OfficerDashboard = () => {
     const fetchAll = async () => {
       try {
         const [statsRes, zonesRes, alertsRes, activityRes, rangersRes] = await Promise.all([
-          axios.get('http://localhost:3000/api/officer/stats'),
-          axios.get('http://localhost:3000/api/officer/zones'),
-          axios.get('http://localhost:3000/api/officer/alerts?limit=5'),
-          axios.get('http://localhost:3000/api/officer/live-activity'),
-          axios.get('http://localhost:3000/api/officer/rangers?status=active')
+          axios.get('http://localhost:5000/api/officer/stats'),
+          axios.get('http://localhost:5000/api/officer/zones'),
+          axios.get('http://localhost:5000/api/officer/alerts?limit=5'),
+          axios.get('http://localhost:5000/api/officer/live-activity'),
+          axios.get('http://localhost:5000/api/officer/rangers?status=active')
         ]);
         setStats(statsRes.data);
         setZones(zonesRes.data.slice(0, 5));

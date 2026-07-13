@@ -28,7 +28,7 @@ const OfficerManageZones = () => {
   const addZone = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:3000/api/officer/zones', newZone);
+      await axios.post('http://localhost:5000/api/officer/zones', newZone);
       setMessage('Zone added!');
       setNewZone({ name: '', coordinates: '', status: 'clear' });
       fetchZones();
@@ -40,7 +40,7 @@ const OfficerManageZones = () => {
   const deleteZone = async (id) => {
     if (!window.confirm('Delete this zone?')) return;
     try {
-      await axios.delete(`http://localhost:3000/api/officer/zones/${id}`);
+      await axios.delete(`http://localhost:5000/api/officer/zones/${id}`);
       fetchZones();
     } catch (err) {
       alert('Delete failed: ' + err.response?.data?.message);

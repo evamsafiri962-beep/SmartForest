@@ -31,7 +31,7 @@ const ManageOfficers = () => {
   const addOfficer = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:3000/api/admin/officers', newOfficer);
+      await axios.post('http://localhost:5000/api/admin/officers', newOfficer);
       setMessage('Officer added!');
       setNewOfficer({ name: '', email: '', password: '', forestId: '' });
       fetchData();
@@ -43,7 +43,7 @@ const ManageOfficers = () => {
   const deleteOfficer = async (id) => {
     if (!window.confirm('Delete this officer?')) return;
     try {
-      await axios.delete(`http://localhost:3000/api/admin/officers/${id}`);
+      await axios.delete(`http://localhost:5000/api/admin/officers/${id}`);
       fetchData();
     } catch (err) {
       alert('Delete failed: ' + err.response?.data?.message);

@@ -10,7 +10,7 @@ const AdminForestMap = () => {
   useEffect(() => {
     const fetchForests = async () => {
       try {
-        const res = await axios.get('http://localhost:3000/api/admin/forests-with-zones');
+        const res = await axios.get('http://localhost:5000/api/admin/forests-with-zones');
         setForests(res.data);
       } catch (err) {
         console.error(err);

@@ -9,7 +9,7 @@ const AdminRangers = () => {
   useEffect(() => {
     const fetchRangers = async () => {
       try {
-        const res = await axios.get('http://localhost:3000/api/admin/rangers');
+        const res = await axios.get('http://localhost:5000/api/admin/rangers');
         setRangers(res.data);
       } catch (err) {
         console.error(err);

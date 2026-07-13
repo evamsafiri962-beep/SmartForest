@@ -24,8 +24,8 @@ const OfficerRangers = () => {
   const fetchData = async () => {
     try {
       const [rangersRes, zonesRes] = await Promise.all([
-        axios.get('http://localhost:3000/api/officer/rangers'),
-        axios.get('http://localhost:3000/api/officer/zones')
+        axios.get('http://localhost:5000/api/officer/rangers'),
+        axios.get('http://localhost:5000/api/officer/zones')
       ]);
       setRangers(rangersRes.data);
       setZones(zonesRes.data);
@@ -39,7 +39,7 @@ const OfficerRangers = () => {
   const addRanger = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:3000/api/officer/rangers', formData);
+      await axios.post('http://localhost:5000/api/officer/rangers', formData);
       setMessage('Ranger added!');
       setFormData({ name: '', email: '', password: '', zoneIds: [] });
       setShowForm(false);
@@ -52,7 +52,7 @@ const OfficerRangers = () => {
   const deleteRanger = async (id) => {
     if (!window.confirm('Delete this ranger?')) return;
     try {
-      await axios.delete(`http://localhost:3000/api/officer/rangers/${id}`);
+      await axios.delete(`http://localhost:5000/api/officer/rangers/${id}`);
       fetchData();
     } catch (err) {
       alert('Delete failed: ' + err.response?.data?.message);

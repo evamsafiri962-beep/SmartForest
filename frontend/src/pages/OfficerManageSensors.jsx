@@ -18,8 +18,8 @@ const OfficerManageSensors = () => {
   const fetchData = async () => {
     try {
       const [sensorsRes, zonesRes] = await Promise.all([
-        axios.get('http://localhost:3000/api/officer/sensors'),
-        axios.get('http://localhost:3000/api/officer/zones')
+        axios.get('http://localhost:5000/api/officer/sensors'),
+        axios.get('http://localhost:5000/api/officer/zones')
       ]);
       setSensors(sensorsRes.data);
       setZones(zonesRes.data);
@@ -33,7 +33,7 @@ const OfficerManageSensors = () => {
   const addSensor = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:3000/api/officer/sensors', newSensor);
+      await axios.post('http://localhost:5000/api/officer/sensors', newSensor);
       setMessage('Sensor added!');
       setNewSensor({ sensorId: '', type: 'acoustic', zoneId: '', status: 'online', battery: 100 });
       fetchData();
@@ -45,7 +45,7 @@ const OfficerManageSensors = () => {
   const deleteSensor = async (id) => {
     if (!window.confirm('Delete this sensor?')) return;
     try {
-      await axios.delete(`http://localhost:3000/api/officer/sensors/${id}`);
+      await axios.delete(`http://localhost:5000/api/officer/sensors/${id}`);
       fetchData();
     } catch (err) {
       alert('Delete failed: ' + err.response?.data?.message);

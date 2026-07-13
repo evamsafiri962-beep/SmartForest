@@ -11,7 +11,7 @@ const AdminReports = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.get('http://localhost:3000/api/admin/reports');
+      const res = await axios.get('http://localhost:5000/api/admin/reports');
       setReport(res.data);
     } catch (err) {
       setError('Failed to generate report. Please try again.');

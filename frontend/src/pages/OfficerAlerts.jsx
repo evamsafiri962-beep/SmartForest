@@ -14,8 +14,8 @@ const OfficerAlerts = () => {
     const fetchData = async () => {
       try {
         const [alertsRes, zonesRes] = await Promise.all([
-          axios.get('http://localhost:3000/api/officer/alerts'),
-          axios.get('http://localhost:3000/api/officer/zones')
+          axios.get('http://localhost:5000/api/officer/alerts'),
+          axios.get('http://localhost:5000/api/officer/zones')
         ]);
         setAlerts(alertsRes.data);
         setZones(zonesRes.data);
@@ -32,8 +32,8 @@ const OfficerAlerts = () => {
     const fetchAlerts = async () => {
       try {
         const url = selectedZone
-          ? `http://localhost:3000/api/officer/alerts?zoneId=${selectedZone}`
-          : 'http://localhost:3000/api/officer/alerts';
+          ? `http://localhost:5000/api/officer/alerts?zoneId=${selectedZone}`
+          : 'http://localhost:5000/api/officer/alerts';
         const res = await axios.get(url);
         setAlerts(res.data);
       } catch (err) {

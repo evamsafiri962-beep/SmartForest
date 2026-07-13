@@ -20,7 +20,7 @@ const MyArea = () => {
 
   const fetchZones = async () => {
     try {
-      const res = await axios.get('http://localhost:3000/api/ranger/zones');
+      const res = await axios.get('http://localhost:5000/api/ranger/zones');
       setZones(res.data);
     } catch (err) {
       console.error(err);

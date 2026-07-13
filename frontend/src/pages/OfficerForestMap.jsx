@@ -12,7 +12,7 @@ const OfficerForestMap = () => {
   useEffect(() => {
     const fetchZones = async () => {
       try {
-        const res = await axios.get('http://localhost:3000/api/officer/zones');
+        const res = await axios.get('http://localhost:5000/api/officer/zones');
         setZones(res.data);
       } catch (err) {
         console.error(err);

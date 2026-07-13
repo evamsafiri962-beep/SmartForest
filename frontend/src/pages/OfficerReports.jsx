@@ -13,7 +13,7 @@ const OfficerReports = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.get('http://localhost:3000/api/officer/reports');
+      const res = await axios.get('http://localhost:5000/api/officer/reports');
       setReport(res.data);
     } catch (err) {
       setError('Failed to generate report.');

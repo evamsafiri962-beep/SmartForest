@@ -17,10 +17,10 @@ const RangerOverview = () => {
   const fetchAll = async () => {
     try {
       const [statsRes, alertsRes, activityRes, recentRes] = await Promise.all([
-        axios.get('http://localhost:3000/api/ranger/stats'),
-        axios.get('http://localhost:3000/api/ranger/alerts'),
-        axios.get('http://localhost:3000/api/ranger/live-activity'),
-        axios.get('http://localhost:3000/api/ranger/recent-incidents')
+        axios.get('http://localhost:5000/api/ranger/stats'),
+        axios.get('http://localhost:5000/api/ranger/alerts'),
+        axios.get('http://localhost:5000/api/ranger/live-activity'),
+        axios.get('http://localhost:5000/api/ranger/recent-incidents')
       ]);
       setStats(statsRes.data);
       setAlerts(alertsRes.data);
@@ -39,7 +39,7 @@ const RangerOverview = () => {
 
   const resolveAlert = async (alertId) => {
     try {
-      await axios.put(`http://localhost:3000/api/ranger/resolve/${alertId}`);
+      await axios.put(`http://localhost:5000/api/ranger/resolve/${alertId}`);
       fetchAll();
     } catch (err) {
       console.error(err);

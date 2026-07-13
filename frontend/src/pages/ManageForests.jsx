@@ -14,7 +14,7 @@ const ManageForests = () => {
 
   const fetchForests = async () => {
     try {
-      const res = await axios.get('http://localhost:3000/api/admin/forests');
+      const res = await axios.get('http://localhost:5000/api/admin/forests');
       setForests(res.data);
     } catch (err) {
       console.error(err);
@@ -26,7 +26,7 @@ const ManageForests = () => {
   const addForest = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:3000/api/admin/forests', newForest);
+      await axios.post('http://localhost:5000/api/admin/forests', newForest);
       setMessage('Forest added!');
       setNewForest({ name: '', location: '', description: '' });
       fetchForests();
@@ -38,7 +38,7 @@ const ManageForests = () => {
   const deleteForest = async (id) => {
     if (!window.confirm('Delete this forest? All associated zones, sensors and alerts will also be removed.')) return;
     try {
-      await axios.delete(`http://localhost:3000/api/admin/forests/${id}`);
+      await axios.delete(`http://localhost:5000/api/admin/forests/${id}`);
       fetchForests();
     } catch (err) {
       alert('Delete failed: ' + err.response?.data?.message);
